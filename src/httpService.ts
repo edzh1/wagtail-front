@@ -66,3 +66,42 @@ export async function getPagePreview(contentType, token, params, options) {
 
     return await getRequest(`${API_URL}/v1/page_preview/`, params, options);
 }
+
+
+export async function getPreviewPageData({contentType, token, inPreviewPanel, headers = {}}) {
+    const { json: pagePreviewData } = await getPagePreview(
+        contentType,
+        token,
+        {
+            in_preview_panel: inPreviewPanel,
+        },
+        {
+            headers,
+        }
+    );
+
+    return {
+        props: pagePreviewData,
+    };
+}
+
+export  async function getPageData({path, searchParams, headers = {}, options = null}) {
+    const {
+        json: { componentName, componentProps, redirect, customResponse },
+        headers: responseHeaders,
+    } = await getPage(path, searchParams, {
+        headers,
+        // cache: options?.cache,
+        // revalidate: options?.revalidate,
+    });
+
+    let setCookieHeader = null;
+    if (responseHeaders.get('set-cookie')) {
+        setCookieHeader = responseHeaders.get('set-cookie');
+    }
+
+    return {
+        props: { componentName, componentProps },
+        setCookieHeader,
+    };
+}
