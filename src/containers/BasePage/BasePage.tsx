@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
 
+const WagtailUserbar = dynamic(() => import('../../components/WagtailUserbar'));
 
-const BasePage = ({ children, seo, shouldRenderSeo, wagtailUserbar }) => {
+const BasePage = ({ children, wagtailUserbar }) => {
     return (
         <>
             <div className="BasePage">{children}</div>
-            {/*{!!wagtailUserbar && <WagtailUserbar {...wagtailUserbar} />}*/}
+            {!!wagtailUserbar && <WagtailUserbar {...wagtailUserbar} />}
         </>
     );
 };
@@ -19,9 +21,9 @@ BasePage.defaultProps = {
 BasePage.propTypes = {
     children: PropTypes.node,
     shouldRenderSeo: PropTypes.bool,
-    // wagtailUserbar: PropTypes.shape({
-    //     html: PropTypes.string,
-    // }),
+    wagtailUserbar: PropTypes.shape({
+        html: PropTypes.string,
+    }),
 };
 
 export default BasePage;

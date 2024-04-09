@@ -43,7 +43,7 @@ const Page = async (props) => {
             {!!setCookieHeader && (
                 <ClientComponent setCookieHeader={setCookieHeader} />
             )}
-            <Component {...componentProps} shouldRenderSeo={true} />
+            <Component {...componentProps} />
         </>
     );
 }
