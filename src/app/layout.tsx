@@ -6,7 +6,6 @@ import { headers } from 'next/headers';
 
 const inter = Inter({ subsets: ["latin"] });
 
-
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const pathname = headersList.get("x-pathname") || "";
@@ -17,9 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
     headers: {},
   });
 
+  const seo = data?.props?.componentProps?.seo
+
   return {
-    title: data?.props?.componentProps?.seo?.seoHtmlTitle,
-    description: data?.props?.componentProps?.seo?.seoMetaDescription,
+    title: seo?.seoHtmlTitle,
+    description: seo?.seoMetaDescription,
   }
 }
 

@@ -2,6 +2,7 @@ import { headers, draftMode } from 'next/headers';
 import containers from '../containers/LazyContainers';
 import { getPreviewPageData, getPageData } from '@/httpService'
 import ClientComponent from './clientcomponent';
+import { notFound } from 'next/navigation'
 
 const Page = async (props) => {
     const headersList = headers();
@@ -37,6 +38,10 @@ const Page = async (props) => {
     const { componentName, componentProps } = data.props || {};
     const setCookieHeader = data.setCookieHeader;
     const Component = containers[componentName];
+
+    if (!Component) {
+        return notFound();
+    }
 
     return (
         <>

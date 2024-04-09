@@ -1,8 +1,8 @@
 import querystring from "querystring";
 import {keysToCamelFromSnake, keysToSnakeFromCamel} from './utils'
 
-const API_URL = 'http://localhost:8081//wt/api/nextjs';
-// const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_WAGTAIL_API_URL;
+const API_URL = 'http://localhost:8081/wt/api/nextjs';
+const NEXT_PUBLIC_API_URL = '/wt/api/nextjs';
 export async function getRequest(url, params, options) {
     params = params || {};
     params = keysToSnakeFromCamel(params);
@@ -104,4 +104,13 @@ export  async function getPageData({path, searchParams, headers = {}, options = 
         props: { componentName, componentProps },
         setCookieHeader,
     };
+}
+
+
+export async function getPublicViewData(slug, params, options) {
+    return await getRequest(
+        `${NEXT_PUBLIC_API_URL}/v1/external_view_data/${slug}/`,
+        params,
+        options
+    );
 }
