@@ -20,7 +20,6 @@ BasePage.defaultProps = {
 
 BasePage.propTypes = {
     children: PropTypes.node,
-    shouldRenderSeo: PropTypes.bool,
     wagtailUserbar: PropTypes.shape({
         html: PropTypes.string,
     }),

@@ -1,5 +1,6 @@
 import querystring from "querystring";
-import {keysToCamelFromSnake, keysToSnakeFromCamel} from './utils'
+import { keysToCamelFromSnake, keysToSnakeFromCamel } from './utils'
+import { WagtailApiResponseError } from "@/errors"
 
 const API_URL = 'http://localhost:8081/wt/api/nextjs';
 const NEXT_PUBLIC_API_URL = '/wt/api/nextjs';
@@ -33,11 +34,11 @@ export async function getRequest(url, params, options) {
     }
     const res = await fetch(`${url}?${queryString}`, fetchOptions);
 
-    // if (res.status < 200 || res.status >= 300) {
-    //     const error = new WagtailApiResponseError(res, url, params);
-    //     error.response = res;
-    //     throw error;
-    // }
+    if (res.status < 200 || res.status >= 300) {
+        const error = new WagtailApiResponseError(res, url, params);
+        error.response = res;
+        throw error;
+    }
 
     const json = await res.json();
     return {
@@ -67,50 +68,17 @@ export async function getPagePreview(contentType, token, params, options) {
     return await getRequest(`${API_URL}/v1/page_preview/`, params, options);
 }
 
-
-export async function getPreviewPageData({contentType, token, inPreviewPanel, headers = {}}) {
-    const { json: pagePreviewData } = await getPagePreview(
-        contentType,
-        token,
-        {
-            in_preview_panel: inPreviewPanel,
-        },
-        {
-            headers,
-        }
-    );
-
-    return {
-        props: pagePreviewData,
-    };
-}
-
-export  async function getPageData({path, searchParams, headers = {}, options = null}) {
-    const {
-        json: { componentName, componentProps, redirect, customResponse },
-        headers: responseHeaders,
-    } = await getPage(path, searchParams, {
-        headers,
-        // cache: options?.cache,
-        // revalidate: options?.revalidate,
-    });
-
-    let setCookieHeader = null;
-    if (responseHeaders.get('set-cookie')) {
-        setCookieHeader = responseHeaders.get('set-cookie');
-    }
-
-    return {
-        props: { componentName, componentProps },
-        setCookieHeader,
-    };
-}
-
-
 export async function getPublicViewData(slug, params, options) {
     return await getRequest(
         `${NEXT_PUBLIC_API_URL}/v1/external_view_data/${slug}/`,
         params,
         options
     );
+}
+
+
+// debug
+
+export async function get500() {
+    return await getRequest(`http://localhost:8081/wt/500/`, {}, {});
 }
