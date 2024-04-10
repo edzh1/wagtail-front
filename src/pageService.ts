@@ -1,4 +1,4 @@
-import { getPage, getPagePreview, get500 } from "@/httpService";
+import { getPage, getPagePreview, get500, getRedirect } from "@/httpService";
 import { WagtailApiResponseError } from "@/errors"
 import { notFound } from 'next/navigation'
 
@@ -21,7 +21,18 @@ export async function getPreviewPageData({contentType, token, inPreviewPanel, he
             props: pagePreviewData,
         };
     } catch (err) {
-        await errorHandler(err)
+        if (!(err instanceof WagtailApiResponseError)) {
+            throw err;
+        }
+
+        if (!isProd && err.response.status >= 500) {
+            return {
+                props: {
+                    componentName: 'Error500Page',
+                    componentProps: {},
+                },
+            };
+        }
 
         throw err;
     }
@@ -38,6 +49,11 @@ export async function getPageData({path, searchParams, headers = {}, options = n
                 revalidate: options?.revalidate,
             });
 
+        // const {
+        //     json: {componentName, componentProps, redirect, customResponse},
+        //     headers: responseHeaders,
+        // } = await get500();
+
         let setCookieHeader = null;
         if (responseHeaders.get('set-cookie')) {
             setCookieHeader = responseHeaders.get('set-cookie');
@@ -48,23 +64,41 @@ export async function getPageData({path, searchParams, headers = {}, options = n
             setCookieHeader,
         };
     } catch (err) {
-        return errorHandler(err)
+        if (!(err instanceof WagtailApiResponseError)) {
+            throw err;
+        }
+
+        if (!isProd && err.response.status >= 500) {
+            return {
+                props: {
+                    componentName: 'Error500Page',
+                    componentProps: {},
+                },
+            };
+        }
     }
-}
 
+    try {
+        const { json: redirect } = await getRedirect(path, searchParams, {
+            headers,
+        });
 
-const errorHandler = async (err) => {
-    if (!(err instanceof WagtailApiResponseError)) {
-        throw err;
-    }
-
-    if (!isProd && err.response.status >= 500) {
+        const { destination, isPermanent } = redirect;
         return {
-            props: {
-                componentName: 'Error500Page',
-                componentProps: {},
+            redirect: {
+                destination: destination,
+                permanent: isPermanent,
             },
         };
+    } catch (err) {
+        if (!(err instanceof WagtailApiResponseError)) {
+            throw err;
+        }
+
+        if (err.response.status >= 500) {
+            throw err;
+        }
     }
 }
+
 

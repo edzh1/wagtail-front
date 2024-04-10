@@ -4,6 +4,7 @@ import { WagtailApiResponseError } from "@/errors"
 
 const API_URL = 'http://localhost:8081/wt/api/nextjs';
 const NEXT_PUBLIC_API_URL = '/wt/api/nextjs';
+
 export async function getRequest(url, params, options) {
     params = params || {};
     params = keysToSnakeFromCamel(params);
@@ -74,6 +75,16 @@ export async function getPublicViewData(slug, params, options) {
         params,
         options
     );
+}
+
+export async function getRedirect(path, params, options) {
+    params = params || {};
+    params = {
+        htmlPath: path,
+        ...params,
+    };
+
+    return await getRequest(`${API_URL}/v1/redirect_by_path/`, params, options);
 }
 
 

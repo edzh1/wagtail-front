@@ -2,7 +2,7 @@ import { headers, draftMode } from 'next/headers';
 import containers from '../containers/LazyContainers';
 import { getPreviewPageData, getPageData } from '@/pageService'
 import ClientComponent from './clientcomponent';
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 
 const Page = async (props) => {
     const headersList = headers();
@@ -39,7 +39,12 @@ const Page = async (props) => {
     const setCookieHeader = data?.setCookieHeader;
     const Component = containers[componentName];
 
-    console.log(data)
+    if (data?.redirect) {
+        const { destination, permanent } = data.redirect;
+        return permanent
+            ? permanentRedirect(destination)
+            : redirect(destination);
+    }
 
     if (!Component) {
         return notFound();
