@@ -1,4 +1,4 @@
-const NotFoundPage = () => {
+const Index = () => {
     return (
         <div>
             <p>Not found</p>
@@ -6,4 +6,4 @@ const NotFoundPage = () => {
     )
 }
 
-export default NotFoundPage
+export default Index
