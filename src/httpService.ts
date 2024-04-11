@@ -69,14 +69,6 @@ export async function getPagePreview(contentType, token, params, options) {
     return await getRequest(`${API_URL}/v1/page_preview/`, params, options);
 }
 
-export async function getPublicViewData(slug, params, options) {
-    return await getRequest(
-        `${NEXT_PUBLIC_API_URL}/v1/external_view_data/${slug}/`,
-        params,
-        options
-    );
-}
-
 export async function getRedirect(path, params, options) {
     params = params || {};
     params = {
@@ -88,8 +80,7 @@ export async function getRedirect(path, params, options) {
 }
 
 
-// debug
-
+// debug //
 export async function get500() {
     return await getRequest(`http://localhost:8081/wt/500/`, {}, {});
 }

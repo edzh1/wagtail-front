@@ -1,6 +1,5 @@
 import { getPage, getPagePreview, get500, getRedirect } from "@/httpService";
 import { WagtailApiResponseError } from "@/errors"
-import { notFound } from 'next/navigation'
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -25,7 +24,7 @@ export async function getPreviewPageData({contentType, token, inPreviewPanel, he
             throw err;
         }
 
-        if (!isProd && err.response.status >= 500) {
+        if (err.response.status >= 500) {
             return {
                 props: {
                     componentName: 'Error500Page',
@@ -49,11 +48,6 @@ export async function getPageData({path, searchParams, headers = {}, options = n
                 revalidate: options?.revalidate,
             });
 
-        // const {
-        //     json: {componentName, componentProps, redirect, customResponse},
-        //     headers: responseHeaders,
-        // } = await get500();
-
         let setCookieHeader = null;
         if (responseHeaders.get('set-cookie')) {
             setCookieHeader = responseHeaders.get('set-cookie');
@@ -69,6 +63,18 @@ export async function getPageData({path, searchParams, headers = {}, options = n
         }
 
         if (!isProd && err.response.status >= 500) {
+            const html = await err.response.text();
+
+            console.log(html)
+            return {
+                props: {
+                    componentName: 'PureHtmlPage',
+                    componentProps: { html },
+                },
+            };
+        }
+
+        if (err.response.status >= 500) {
             return {
                 props: {
                     componentName: 'Error500Page',
