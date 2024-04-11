@@ -30,6 +30,11 @@ body {
   color: red
 }
 
+.heading {
+  font-size: 40px;
+  font-weight: 600;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
